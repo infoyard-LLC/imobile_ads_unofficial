@@ -1,28 +1,26 @@
 # imobile_ads_unofficial
 
-> **Note:** This is an **unofficial** package. It is not affiliated with, endorsed by, or supported by i-mobile Co., Ltd.
+> **注意:** 本パッケージは非公式です。株式会社アイモバイル(i-mobile Co., Ltd.)とは一切関係ありません。
 
-A Flutter plugin for integrating **i-mobile ads** into **Android** and **iOS** apps.
+i-mobile 広告を Flutter から利用するための**非公式** Plugin です。  
+Android / iOS の両方で、以下の機能を提供します。
 
-This plugin provides:
+- SDK 初期化
+- インタースティシャル広告の読み込み / 表示
+- バナー広告の Flutter Widget 表示
+- 広告イベントの購読
 
-- SDK initialization
-- Interstitial ad loading and display
-- Banner / inline ad display via a Flutter widget
-- Ad event subscription
+> この Plugin は i-mobile のネイティブ SDK をラップする実装です。  
+> 利用するには、i-mobile 側で発行される `publisherId` / `mediaId` / `spotId` が必要です。
 
-> [!IMPORTANT]
-> This plugin is a wrapper around the native i-mobile SDK.
-> You need valid **publisherId**, **mediaId**, and **spotId** values issued by i-mobile.
-
-## Supported platforms
+## 対応プラットフォーム
 
 - Android
 - iOS
 
-Web, macOS, Windows, and Linux are not supported.
+Web / macOS / Windows / Linux には対応していません。
 
-## Main APIs
+## 主なAPI
 
 - `MobileAdNetwork.initialize(...)`
 - `MobileAdNetwork.loadInterstitialAd(...)`
@@ -30,7 +28,7 @@ Web, macOS, Windows, and Linux are not supported.
 - `MobileAdWidget(spotId: ...)`
 - `MobileAdNetwork.adEventStream`
 
-## Requirements
+## 前提条件
 
 ### Flutter / Dart
 
@@ -45,13 +43,13 @@ Web, macOS, Windows, and Linux are not supported.
 
 ### iOS
 
-- iOS 15.0+
+- iOS 15.0 以上
 - CocoaPods
-- i-mobile iOS SDK frameworks available under `ios/Frameworks/*.xcframework`
+- i-mobile iOS SDK (`ios/Frameworks/*.xcframework`) を利用できること
 
-## Installation
+## インストール
 
-### Using from GitHub
+### GitHub から利用する場合
 
 ```yaml
 dependencies:
@@ -60,30 +58,30 @@ dependencies:
       url: https://github.com/infoyard-LLC/imobile_ads_unofficial.git
 ```
 
-### Using from pub.dev
+### pub.dev に公開した場合
 
 ```yaml
 dependencies:
   imobile_ads_unofficial: ^0.0.1
 ```
 
-Then run:
+その後、依存関係を取得します。
 
 ```bash
 flutter pub get
 ```
 
-## Native SDK setup
+## ネイティブSDKについて
 
 ### Android
 
-On the Android side, place the imobileSdkAds.jar file from the SDK obtained from i-mobile in the following folder.
+Android 側は以下のフォルダにi-mobileから入手したSDKのimobileSdkAds.jarを配置します
 
 ```text
 android/libs/imobileSdkAds.jar
 ```
 
-The plugin also declares these permissions:
+また、Plugin 側で以下の権限を宣言しています。
 
 - `android.permission.INTERNET`
 - `android.permission.ACCESS_NETWORK_STATE`
@@ -91,17 +89,17 @@ The plugin also declares these permissions:
 
 ### iOS
 
-The iOS side expects vendored frameworks such as:
+iOS 側は以下の vendored framework を前提にしています。
 
 ```text
 ios/Frameworks/*.xcframework
 ```
 
-## Usage
+## 使い方
 
-### 1. Configure IDs
+### 1. 設定
 
-Update the following values in `example/lib/main.dart`:
+`example/lib/main.dart` の以下を書き換えます。
 
 ```dart
 String publisherId = 'publisherId';
@@ -110,15 +108,15 @@ String interstitialAdSpotId = 'interstitialAdSpotId';
 String bannerAdSpotId = 'bannerAdSpotId';
 ```
 
-If needed, switch test mode on or off:
+必要に応じてテストモードを切り替えます。
 
 ```dart
 bool isTest = true;
 ```
 
-### 2. Initialize the SDK
+### 2. 初期化
 
-Initialize the plugin before `runApp()`:
+`runApp()` の前に初期化します。
 
 ```dart
 void main() async {
@@ -134,22 +132,22 @@ void main() async {
 }
 ```
 
-### 3. Run the example app
+### 3. 実行方法
 
 ```bash
 cd example
 flutter run
 ```
 
-## Example usage
+## 実装例
 
-### Imports
+### import
 
 ```dart
 import 'package:imobile_ads_unofficial/imobile_ads_unofficial.dart';
 ```
 
-### Interstitial + Banner example
+### インタースティシャル広告 + バナー広告
 
 ```dart
 import 'package:flutter/material.dart';
@@ -199,12 +197,12 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(title: const Text('Plugin example app')),
         body: Column(
           children: [
-            const Text('Ad display'),
+            const Text('広告表示'),
             ElevatedButton(
               onPressed: () {
                 MobileAdNetwork.showInterstitialAd(interstitialAdSpotId);
               },
-              child: const Text('Show interstitial ad'),
+              child: const Text('インタースティシャル広告表示'),
             ),
             Expanded(
               child: MobileAdWidget(
@@ -219,9 +217,9 @@ class _MyAppState extends State<MyApp> {
 }
 ```
 
-## Ad events
+## イベント購読
 
-You can listen to ad lifecycle events through `adEventStream`:
+広告イベントは `adEventStream` で受け取れます。
 
 ```dart
 MobileAdNetwork.adEventStream.listen((AdEvent event) {
@@ -229,7 +227,7 @@ MobileAdNetwork.adEventStream.listen((AdEvent event) {
 });
 ```
 
-The current implementation emits the following event names:
+現状の実装で通知されるイベント名は以下です。
 
 - `onAdReady`
 - `onAdShow`
@@ -237,11 +235,9 @@ The current implementation emits the following event names:
 - `onAdClick`
 - `onFailed`
 
-## API reference
+## API
 
 ### `MobileAdNetwork.initialize`
-
-Initializes the plugin.
 
 ```dart
 static Future<void> initialize({
@@ -251,31 +247,27 @@ static Future<void> initialize({
 })
 ```
 
-Parameters:
-
-- `publisherId`: i-mobile publisher ID
-- `mediaId`: i-mobile media ID
-- `isTest`: enables SDK test mode
+- `publisherId`: i-mobile の publisher ID
+- `mediaId`: i-mobile の media ID
+- `isTest`: テストモード有効化
 
 ### `MobileAdNetwork.loadInterstitialAd`
-
-Preloads an interstitial ad.
 
 ```dart
 static Future<void> loadInterstitialAd(String spotId)
 ```
 
-### `MobileAdNetwork.showInterstitialAd`
+インタースティシャル広告を事前読み込みします。
 
-Shows a previously loaded interstitial ad.
+### `MobileAdNetwork.showInterstitialAd`
 
 ```dart
 static Future<void> showInterstitialAd(String spotId)
 ```
 
-### `MobileAdWidget`
+インタースティシャル広告を表示します。
 
-Displays an inline / banner ad using a platform view.
+### `MobileAdWidget`
 
 ```dart
 const MobileAdWidget({
@@ -284,29 +276,24 @@ const MobileAdWidget({
 })
 ```
 
-## Example app
+Flutter 画面上にバナー広告を表示します。
 
-A runnable example is included in:
+## 注意事項
 
-```text
-example/
+- `initialize()` は広告表示前に一度だけ呼んでください。
+- `loadInterstitialAd()` の後に `showInterstitialAd()` を呼ぶ構成を推奨します。
+- iOS 側は `xcframework` が存在しないとビルドできません。
+- 現状ソース内のコメントにもある通り、**複数広告の同時表示には未対応の可能性** があります。
+- Android / iOS ともに Spot ID ごとにネイティブ側へ登録しているため、同時利用時は実機で十分に確認してください。
+
+## example の実行
+
+```bash
+cd example
+flutter pub get
+flutter run
 ```
 
-The example demonstrates:
+## ライセンス
 
-- SDK initialization
-- Interstitial preload and display
-- Banner / inline ad rendering
-- Ad event logging
-
-## Known limitations
-
-- The current implementation contains a TODO suggesting that showing multiple ads at the same time may not be fully supported.
-- Only Android and iOS are implemented.
-- iOS distribution requires proper packaging of the native i-mobile SDK frameworks.
-- Event payloads are currently limited to `event` name and `spotId`.
-
-## License
-
-This project is released under the MIT License.
-See [LICENSE](LICENSE).
+MIT License

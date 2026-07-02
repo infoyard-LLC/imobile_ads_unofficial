@@ -1,0 +1,29 @@
+name: imobile_ads_unofficial
+description: Flutter plugin for displaying i-mobile interstitial and banner ads on Android and iOS.
+version: 0.0.1
+homepage: https://github.com/infoyard-LLC/imobile_ads_unofficial
+repository: https://github.com/infoyard-LLC/imobile_ads_unofficial
+issue_tracker: https://github.com/infoyard-LLC/imobile_ads_unofficial/issues
+
+environment:
+  sdk: ^3.10.4
+  flutter: '>=3.3.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  plugin_platform_interface: ^2.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: jp.infoyard.imobile_ads_unofficial
+        pluginClass: MobileAdNetworkPlugin
+      ios:
+        pluginClass: MobileAdNetworkPlugin
