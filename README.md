@@ -1,73 +1,44 @@
 # imobile_ads_unofficial
 
-> **Note:** This is an **unofficial** package. It is not affiliated with, endorsed by, or supported by i-mobile Co., Ltd.
+> **Note:** This is an unofficial package. It is not affiliated with, endorsed by, or supported by i-mobile Co., Ltd.
 
-A Flutter plugin for integrating **i-mobile ads** into **Android** and **iOS** apps.
-
-This plugin provides:
+An unofficial Flutter plugin for i-mobile ads on Android and iOS.
 
 - SDK initialization
 - Interstitial ad loading and display
-- Banner / inline ad display via a Flutter widget
-- Ad event subscription
+- Banner / inline ads through a Flutter widget
+- Ad lifecycle events
 
-> [!IMPORTANT]
-> This plugin is a wrapper around the native i-mobile SDK.
-> You need valid **publisherId**, **mediaId**, and **spotId** values issued by i-mobile.
+## Important: native SDK binaries are not bundled
 
-## Supported platforms
+`imobile_ads_unofficial` does not redistribute the proprietary i-mobile native SDK. Each user must obtain the SDK directly from i-mobile, review the applicable terms, and install it in the consuming app.
 
-- Android
-- iOS
+Never commit or publish these files in this plugin repository or its pub.dev archive:
 
-Web, macOS, Windows, and Linux are not supported.
-
-## Main APIs
-
-- `MobileAdNetwork.initialize(...)`
-- `MobileAdNetwork.loadInterstitialAd(...)`
-- `MobileAdNetwork.showInterstitialAd(...)`
-- `MobileAdWidget(spotId: ...)`
-- `MobileAdNetwork.adEventStream`
+- `imobileSdkAds.jar`
+- `ImobileSdkAds.xcframework`
+- i-mobile SDK ZIP files, samples, or other vendor archives
 
 ## Requirements
 
-### Flutter / Dart
-
+- Android: minSdk 24, Java 17, Kotlin 2.2.x
+- iOS: 15.0+, CocoaPods
 - Dart SDK: `^3.10.4`
 - Flutter: `>=3.3.0`
 
-### Android
-
-- `minSdk = 24`
-- Java 17
-- Kotlin 2.2.x
-
-### iOS
-
-- iOS 15.0+
-- CocoaPods
-- i-mobile iOS SDK frameworks available under `ios/Frameworks/*.xcframework`
+Web, macOS, Windows, and Linux are not supported.
 
 ## Installation
-
-### Using from GitHub
 
 ```yaml
 dependencies:
   imobile_ads_unofficial:
     git:
       url: https://github.com/infoyard-LLC/imobile_ads_unofficial.git
+      ref: main
 ```
 
-### Using from pub.dev
-
-```yaml
-dependencies:
-  imobile_ads_unofficial: ^0.0.1
-```
-
-Then run:
+> Do not use the previously published pub.dev 0.0.1 archive while remediation is in progress.
 
 ```bash
 flutter pub get
@@ -77,151 +48,131 @@ flutter pub get
 
 ### Android
 
-On the Android side, place the imobileSdkAds.jar file from the SDK obtained from i-mobile in the following folder.
+1. Obtain the official Android SDK directly from i-mobile.
+2. Copy `imobileSdkAds.jar` into the consuming Flutter app, not into this plugin:
 
 ```text
-android/libs/imobileSdkAds.jar
+<Flutter app>/android/app/libs/imobileSdkAds.jar
 ```
 
-The plugin also declares these permissions:
+Create the directory when necessary:
 
-- `android.permission.INTERNET`
-- `android.permission.ACCESS_NETWORK_STATE`
-- `com.google.android.gms.permission.AD_ID`
+```bash
+mkdir -p android/app/libs
+cp /path/to/imobileSdkAds.jar android/app/libs/imobileSdkAds.jar
+```
+
+The plugin detects that path automatically. An absolute path can also be supplied with the Gradle property `imobileSdkJar` or the `IMOBILE_ANDROID_SDK_JAR` environment variable.
+
+```bash
+export IMOBILE_ANDROID_SDK_JAR=/absolute/path/imobileSdkAds.jar
+flutter build apk --debug
+```
+
+If the SDK terms prohibit committing the binary, add `android/app/libs/imobileSdkAds.jar` to the app repository's `.gitignore` and distribute it through an approved internal channel.
 
 ### iOS
 
-The iOS side expects vendored frameworks such as:
+The consuming app must provide a local CocoaPod named `ImobileSdkAds`.
+
+1. Obtain the official iOS SDK directly from i-mobile.
+2. Copy the framework to:
 
 ```text
-ios/Frameworks/*.xcframework
+<Flutter app>/ios/Frameworks/ImobileSdkAds.xcframework
 ```
 
-## Usage
+3. Copy this package's `tool/ImobileSdkAds.podspec` to:
 
-### 1. Configure IDs
-
-Update the following values in `example/lib/main.dart`:
-
-```dart
-String publisherId = 'publisherId';
-String mediaId = 'mediaId';
-String interstitialAdSpotId = 'interstitialAdSpotId';
-String bannerAdSpotId = 'bannerAdSpotId';
+```text
+<Flutter app>/ios/ImobileSdkAds.podspec
 ```
 
-If needed, switch test mode on or off:
+To create it manually, save the following content. Adjust `s.version` to match the SDK release you installed when appropriate.
 
-```dart
-bool isTest = true;
+```ruby
+Pod::Spec.new do |s|
+  s.name = 'ImobileSdkAds'
+  s.version = '2.3.4'
+  s.summary = 'Local wrapper for the official i-mobile iOS SDK.'
+  s.description = 'References an SDK obtained directly by the app developer.'
+  s.homepage = 'https://sppartner.i-mobile.co.jp/sdk_download.aspx'
+  s.license = { :type => 'Proprietary' }
+  s.author = { 'i-mobile Co., Ltd.' => 'https://www.i-mobile.co.jp/' }
+  s.source = { :path => '.' }
+  s.platform = :ios, '15.0'
+  s.static_framework = true
+  s.vendored_frameworks = 'Frameworks/ImobileSdkAds.xcframework'
+  s.frameworks = 'AdSupport', 'SystemConfiguration', 'CoreLocation', 'WebKit', 'StoreKit'
+  s.weak_frameworks = 'UIKit', 'Foundation'
+  s.pod_target_xcconfig = {
+    'CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES' => 'YES'
+  }
+  s.user_target_xcconfig = {
+    'CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES' => 'YES'
+  }
+end
 ```
 
-### 2. Initialize the SDK
+4. Add the local pod inside the `Runner` target in the app's `ios/Podfile`:
 
-Initialize the plugin before `runApp()`:
+```ruby
+target 'Runner' do
+  pod 'ImobileSdkAds', :path => '.'
 
-```dart
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  await MobileAdNetwork.initialize(
-    publisherId: publisherId,
-    mediaId: mediaId,
-    isTest: isTest,
-  );
-
-  runApp(const MyApp());
-}
+  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+end
 ```
 
-### 3. Run the example app
+5. Reinstall Pods:
 
 ```bash
-cd example
-flutter run
+cd ios
+rm -rf Pods Podfile.lock
+pod install
+cd ..
 ```
 
-## Example usage
+If the SDK terms prohibit committing the binary, add `ios/Frameworks/ImobileSdkAds.xcframework/` to the app repository's `.gitignore`.
 
-### Imports
+## Initialize
 
-```dart
-import 'package:imobile_ads_unofficial/imobile_ads_unofficial.dart';
-```
-
-### Interstitial + Banner example
+Valid `publisherId`, `mediaId`, and `spotId` values issued by i-mobile are required.
 
 ```dart
 import 'package:flutter/material.dart';
 import 'package:imobile_ads_unofficial/imobile_ads_unofficial.dart';
 
-String publisherId = 'publisherId';
-String mediaId = 'mediaId';
-String interstitialAdSpotId = 'interstitialAdSpotId';
-String bannerAdSpotId = 'bannerAdSpotId';
-bool isTest = true;
+const publisherId = 'publisherId';
+const mediaId = 'mediaId';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await MobileAdNetwork.initialize(
     publisherId: publisherId,
     mediaId: mediaId,
-    isTest: isTest,
+    isTest: true,
   );
 
   runApp(const MyApp());
 }
-
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  @override
-  void initState() {
-    super.initState();
-
-    MobileAdNetwork.loadInterstitialAd(interstitialAdSpotId);
-
-    MobileAdNetwork.adEventStream.listen((AdEvent event) {
-      debugPrint('MobileAdNetwork event: $event');
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Plugin example app')),
-        body: Column(
-          children: [
-            const Text('Ad display'),
-            ElevatedButton(
-              onPressed: () {
-                MobileAdNetwork.showInterstitialAd(interstitialAdSpotId);
-              },
-              child: const Text('Show interstitial ad'),
-            ),
-            Expanded(
-              child: MobileAdWidget(
-                spotId: bannerAdSpotId,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
 ```
 
-## Ad events
+## Interstitial ads
 
-You can listen to ad lifecycle events through `adEventStream`:
+```dart
+await MobileAdNetwork.loadInterstitialAd('interstitialSpotId');
+await MobileAdNetwork.showInterstitialAd('interstitialSpotId');
+```
+
+## Banner / inline ads
+
+```dart
+const MobileAdWidget(spotId: 'bannerSpotId')
+```
+
+## Events
 
 ```dart
 MobileAdNetwork.adEventStream.listen((AdEvent event) {
@@ -229,7 +180,7 @@ MobileAdNetwork.adEventStream.listen((AdEvent event) {
 });
 ```
 
-The current implementation emits the following event names:
+Emitted event names:
 
 - `onAdReady`
 - `onAdShow`
@@ -237,76 +188,16 @@ The current implementation emits the following event names:
 - `onAdClick`
 - `onFailed`
 
-## API reference
+## Publication safety check
 
-### `MobileAdNetwork.initialize`
+Maintainers must run this before publishing:
 
-Initializes the plugin.
-
-```dart
-static Future<void> initialize({
-  required String publisherId,
-  required String mediaId,
-  bool isTest = false,
-})
+```bash
+bash tool/check_publish_contents.sh
 ```
 
-Parameters:
-
-- `publisherId`: i-mobile publisher ID
-- `mediaId`: i-mobile media ID
-- `isTest`: enables SDK test mode
-
-### `MobileAdNetwork.loadInterstitialAd`
-
-Preloads an interstitial ad.
-
-```dart
-static Future<void> loadInterstitialAd(String spotId)
-```
-
-### `MobileAdNetwork.showInterstitialAd`
-
-Shows a previously loaded interstitial ad.
-
-```dart
-static Future<void> showInterstitialAd(String spotId)
-```
-
-### `MobileAdWidget`
-
-Displays an inline / banner ad using a platform view.
-
-```dart
-const MobileAdWidget({
-  Key? key,
-  required String spotId,
-})
-```
-
-## Example app
-
-A runnable example is included in:
-
-```text
-example/
-```
-
-The example demonstrates:
-
-- SDK initialization
-- Interstitial preload and display
-- Banner / inline ad rendering
-- Ad event logging
-
-## Known limitations
-
-- The current implementation contains a TODO suggesting that showing multiple ads at the same time may not be fully supported.
-- Only Android and iOS are implemented.
-- iOS distribution requires proper packaging of the native i-mobile SDK frameworks.
-- Event payloads are currently limited to `event` name and `spotId`.
+It checks the working tree, Git index, and the file list produced by `flutter pub publish --dry-run`.
 
 ## License
 
-This project is released under the MIT License.
-See [LICENSE](LICENSE).
+The plugin source is released under the MIT License. The native i-mobile SDK is governed by separate terms supplied by i-mobile.

@@ -1,0 +1,52 @@
+# Dart / Flutter
+.dart_tool/
+.packages
+.pub/
+build/
+coverage/
+example/.dart_tool/
+example/build/
+
+# IDE / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+**/.DS_Store
+__MACOSX/
+
+# Android generated/local files
+android/.gradle/
+android/local.properties
+example/android/.gradle/
+example/android/local.properties
+**/key.properties
+**/*.jks
+**/*.keystore
+
+# iOS generated files
+ios/Pods/
+example/ios/Pods/
+**/.symlinks/
+**/Flutter/ephemeral/
+
+# Third-party i-mobile SDK binaries.
+# Each developer/user must obtain these directly from i-mobile.
+android/libs/*.jar
+android/libs/*.aar
+example/android/app/libs/*.jar
+example/android/app/libs/*.aar
+ios/Frameworks/
+example/ios/Frameworks/
+**/imobileSdkAds.jar
+**/ImobileSdkAds.xcframework/
+imobile_for_SP_app_*
+**/imobile_for_SP_app_*
+
+# Download archives
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.7z
+*.rar

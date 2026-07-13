@@ -7,7 +7,6 @@ buildscript {
         google()
         mavenCentral()
     }
-
     dependencies {
         classpath("com.android.tools.build:gradle:8.11.1")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
@@ -24,9 +23,35 @@ allprojects {
 apply plugin: "com.android.library"
 apply plugin: "kotlin-android"
 
+// The proprietary i-mobile SDK is intentionally not bundled with this plugin.
+// Resolution order:
+//   1. -PimobileSdkJar=/absolute/path/imobileSdkAds.jar
+//   2. IMOBILE_ANDROID_SDK_JAR environment variable
+//   3. Consumer Flutter app: android/app/libs/imobileSdkAds.jar
+//   4. Plugin-development fallback: android/libs/imobileSdkAds.jar
+//
+// Option 4 is only for local plugin development and is excluded by both
+// .gitignore and .pubignore.
+def configuredImobileSdkJar = project.findProperty("imobileSdkJar") ?: System.getenv("IMOBILE_ANDROID_SDK_JAR")
+def imobileSdkJarCandidates = []
+if (configuredImobileSdkJar) {
+    imobileSdkJarCandidates << file(configuredImobileSdkJar.toString())
+}
+imobileSdkJarCandidates << rootProject.file("app/libs/imobileSdkAds.jar")
+imobileSdkJarCandidates << file("libs/imobileSdkAds.jar")
+
+def imobileSdkJar = imobileSdkJarCandidates.find { candidate -> candidate.exists() }
+if (imobileSdkJar == null) {
+    throw new GradleException(
+        "i-mobile Android SDK was not found. " +
+        "Copy imobileSdkAds.jar to <your Flutter app>/android/app/libs/imobileSdkAds.jar, " +
+        "or set -PimobileSdkJar=/absolute/path/imobileSdkAds.jar. " +
+        "The SDK is not distributed with imobile_ads_unofficial."
+    )
+}
+
 android {
     namespace = "jp.infoyard.imobile_ads_unofficial"
-
     compileSdk = 36
 
     compileOptions {
@@ -55,16 +80,16 @@ android {
     testOptions {
         unitTests.all {
             useJUnitPlatform()
-
             testLogging {
-               events "passed", "skipped", "failed", "standardOut", "standardError"
-               outputs.upToDateWhen {false}
-               showStandardStreams = true
+                events "passed", "skipped", "failed", "standardOut", "standardError"
+                outputs.upToDateWhen { false }
+                showStandardStreams = true
             }
         }
     }
 }
+
 dependencies {
-    implementation files('libs/imobileSdkAds.jar')
+    implementation files(imobileSdkJar)
     implementation('com.google.android.gms:play-services-ads-identifier:18.2.0')
 }

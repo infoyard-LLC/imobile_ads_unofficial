@@ -1,0 +1,48 @@
+# -----------------------------------------------------------------------------
+# Third-party i-mobile SDK binaries must never be included in a pub.dev archive.
+# The SDK must be obtained directly by each user from i-mobile.
+# -----------------------------------------------------------------------------
+android/libs/*.jar
+android/libs/*.aar
+ios/Frameworks/
+example/android/app/libs/*.jar
+example/android/app/libs/*.aar
+example/ios/Frameworks/
+**/imobileSdkAds.jar
+**/ImobileSdkAds.xcframework/
+imobile_for_SP_app_*
+**/imobile_for_SP_app_*
+
+# Vendor/download archives
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.7z
+*.rar
+
+# Local configuration, credentials, and signing material
+.env
+.env.*
+android/local.properties
+example/android/local.properties
+**/key.properties
+**/*.jks
+**/*.keystore
+
+# Generated files and local IDE state
+.dart_tool/
+.packages
+.pub/
+build/
+coverage/
+example/.dart_tool/
+example/build/
+.idea/
+.vscode/
+.DS_Store
+**/.DS_Store
+__MACOSX/
+
+# Repository-only automation
+.github/
