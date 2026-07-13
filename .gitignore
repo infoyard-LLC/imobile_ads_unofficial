@@ -50,3 +50,6 @@ imobile_for_SP_app_*
 *.tgz
 *.7z
 *.rar
+
+# Root lockfile for this Flutter package
+/pubspec.lock
