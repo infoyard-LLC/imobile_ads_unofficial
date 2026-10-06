@@ -1,3 +1,11 @@
+## 0.0.2
+
+- Removed bundled proprietary i-mobile SDK binaries.
+- Native i-mobile SDKs are now supplied by the consuming application.
+- Added Android and iOS native SDK placement instructions.
+- Added `.gitignore` and `.pubignore` safeguards.
+- Added publication safety checks to prevent accidental SDK redistribution.
+
 ## 0.0.1
 
 * Initial plugin release.

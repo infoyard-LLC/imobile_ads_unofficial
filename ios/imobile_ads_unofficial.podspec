@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = 'imobile_ads_unofficial'
-  s.version = '0.0.1'
+  s.version = '0.0.2'
   s.summary = 'Unofficial Flutter plugin for i-mobile ads (interstitial and banner).'
   s.description = <<-DESC
 Unofficial Flutter plugin for displaying i-mobile interstitial and banner ads on iOS. Not affiliated with i-mobile Co., Ltd.

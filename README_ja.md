@@ -32,13 +32,8 @@ Web、macOS、Windows、Linux には対応していません。
 
 ```yaml
 dependencies:
-  imobile_ads_unofficial:
-    git:
-      url: https://github.com/infoyard-LLC/imobile_ads_unofficial.git
-      ref: main
+  imobile_ads_unofficial: ^0.0.2
 ```
-
-> 修正対応が完了するまで、以前 pub.dev に公開された 0.0.1 のアーカイブは使用しないでください。
 
 ```bash
 flutter pub get

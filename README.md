@@ -32,13 +32,8 @@ Web, macOS, Windows, and Linux are not supported.
 
 ```yaml
 dependencies:
-  imobile_ads_unofficial:
-    git:
-      url: https://github.com/infoyard-LLC/imobile_ads_unofficial.git
-      ref: main
+  imobile_ads_unofficial: ^0.0.2
 ```
-
-> Do not use the previously published pub.dev 0.0.1 archive while remediation is in progress.
 
 ```bash
 flutter pub get
