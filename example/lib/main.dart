@@ -32,8 +32,7 @@ class _MyAppState extends State<MyApp> {
     MobileAdNetwork.loadInterstitialAd(interstitialAdSpotId);
 
     MobileAdNetwork.adEventStream.listen((AdEvent event) {
-      print('MobileAdNetworkイベント');
-      print(event);
+        debugPrint('MobileAdNetworkイベント: $event');
     });
     super.initState();
   }
