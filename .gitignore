@@ -53,3 +53,12 @@ imobile_for_SP_app_*
 
 # Root lockfile for this Flutter package
 /pubspec.lock
+
+# Flutter generated files
+example/.flutter-plugins-dependencies
+example/android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java
+example/ios/Flutter/Generated.xcconfig
+example/ios/Flutter/flutter_export_environment.sh
+example/ios/Runner/GeneratedPluginRegistrant.h
+example/ios/Runner/GeneratedPluginRegistrant.m
+example/pubspec.lock
